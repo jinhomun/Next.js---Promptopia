@@ -30,6 +30,12 @@ Using npm.
 components 폴더 / models 폴더 / public 폴더 삭제후 다시 생성 / styles 폴더 생성 / utils 폴더 생성 / .env파일 생성   
 app 폴더 안에 있는 파일 삭제후 layout.jsx 파일, page.jsx 파일 생성.
 
+### 구글 클라우드
+New project name : promptopia 생성.  
+Api 및 서비스 - OAuth 동의 화면
+App name: Promptopia 작성, 이메일 작성
+
+NEXTAUTH_SECRET -> `openssl rand -base64 32` -> https://www.cryptool.org/en/cto/openssl  -> 
 
 ## 트러블 슈팅
 Module not found: Can't resolve '@styles/globals.css'
