@@ -4,21 +4,23 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { signIn, signOut, useSession, getProviders } from 'next-auth/react';
-import { Provider } from './Provider';
+
 
 const Nav = () => {
     const isUserLoggedIn = true;
 
-    const [provider, setProviders] = useState(null);
+    const [providers, setProviders] = useState(null);
     const [toggleDropdown, setToggleDropdown] = useState(false);
 
     useEffect(() => {
         const setProviders = async () => {
-            const response = await getProviders();
+            const res = await getProviders();
 
-            setProviders();
+            setProviders(res);
         }
-    }, [])
+        setProviders();
+    }, []);
+
 
     return (
         <nav className="flex-between w-full mb-16 pt-3">
@@ -42,7 +44,7 @@ const Nav = () => {
                             Create Post
                         </Link>
 
-                        <button type="button" onclick={signOut} className='outline_btn'>
+                        <button type="button" onClick={signOut} className='outline_btn'>
                             sign Out
                         </button>
 
@@ -59,7 +61,7 @@ const Nav = () => {
                 ) : (
                     <>
                         {providers &&
-                            object.values(providers).map((Provider) => (
+                            Object.values(providers).map((provider) => (
                                 <button
                                     type="button"
                                     key={provider.name}
@@ -72,6 +74,7 @@ const Nav = () => {
                     </>
                 )}
             </div>
+
             {/*Mobile Navigation */}
             <div className='sm:hidden flex relative'>
                 {isUserLoggedIn ? (
@@ -82,24 +85,41 @@ const Nav = () => {
                             height={37}
                             className="rounded-full"
                             alt="profile"
-                            onClick={() => setToggleDropdown((prev) => !prev)}
+                            onClick={() => setToggleDropdown(!toggleDropdown)}
                         />
                         {toggleDropdown && (
-                            <div className='dropdown'>
+                            <div className="dropdown">
                                 <Link
                                     href="/profile"
                                     className="dropdown_link"
-                                    onClick={() => setToggleDropdown(false)}
+                                    onClick={() => setToggleDropdown(true)}
                                 >
-
+                                    My Profile
                                 </Link>
+                                <Link
+                                    href="/create-prompt"
+                                    className="dropdown_link"
+                                    onClick={() => setToggleDropdown(true)}
+                                >
+                                    Create Prompt
+                                </Link>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setToggleDropdown(false);
+                                        signOut();
+                                    }}
+                                    className="mt-5 w-full black_btn"
+                                >
+                                    Sign Out
+                                </button>
                             </div>
                         )}
                     </div>
                 ) : (
                     <>
                         {providers &&
-                            object.values(providers).map((Provider) => (
+                            Object.values(providers).map((provider) => (
                                 <button
                                     type="button"
                                     key={provider.name}
@@ -110,10 +130,11 @@ const Nav = () => {
                                 </button>
                             ))}
                     </>
+
                 )}
             </div>
         </nav>
-    )
+    );
 }
 
-export default Nav
+export default Nav;
