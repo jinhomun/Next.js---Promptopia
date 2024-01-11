@@ -1,3 +1,4 @@
+# Promptopia
 ## 설치
 `npx create-next-app@latest`
 <details>
