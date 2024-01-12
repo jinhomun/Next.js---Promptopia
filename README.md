@@ -314,7 +314,7 @@ export const GET = async (request) => {
 </details>
 
 ### app > api > users > [id] > posts > route.js   
-MongoDB에서 모든 Prompt 객체를 검색하고, 사용자 정보를 함께 가져와 JSON 형식으로 응답하는 GET 엔드포인트를 정의하고 있습니다.
+특정 사용자가 작성한 Prompt 객체들을 검색하고, 해당 사용자 정보를 함께 가져와 JSON 형식으로 응답하는 GET 엔드포인트를 정의하고 있습니다.
 <details>
 
 <summary>1. 모듈 가져오기</summary>
