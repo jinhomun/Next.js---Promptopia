@@ -47,6 +47,10 @@ app폴더 -> api폴더 생성(Next.js에서 제공하는 서버리스(Serverless
 Next.js 애플리케이션에 Google OAuth를 통한 소셜 로그인을 추가하고, MongoDB를 사용하여 사용자 정보를 저장하는데 활용됩니다.
 <details>
 
+<summary>Code Explanation</summary>
+
+<details>
+
 <summary>1. 모듈 가져오기</summary>
 - next-auth와 Google OAuth를 통한 로그인을 지원하는 next-auth/providers/google 모듈을 가져옵니다.<br>   
 - MongoDB 모델(User)과 데이터베이스 연결을 위한 유틸리티 함수(connectToDB)도 가져옵니다.  
@@ -147,10 +151,15 @@ export { handler as GET, handler as POST };
 ```
 
 </details>
+</details>
 
 
 ### app > api > prompt > [id] > route.js   
 MongoDB를 사용하여 Prompt 모델을 조작하는 API 엔드포인트를 정의하고 있습니다.
+<details>
+
+<summary>Code Explanation</summary>
+
 <details>
 
 <summary>1. GET 엔드포인드(작성한 prompt 가져오기)</summary>
@@ -228,9 +237,14 @@ export const DELETE = async (request, { params }) => {
 ```
 
 </details>
+</details>
 
 ### app > api > prompt > new > route.js   
 클라이언트로부터 받은 데이터를 사용하여 MongoDB에 새로운 Prompt를 생성하는 POST 엔드포인트를 정의하고 있습니다.
+<details>
+
+<summary>Code Explanation</summary>
+
 <details>
 
 <summary>1. 모듈 가져오기</summary>
@@ -275,9 +289,14 @@ export const POST = async (req) => {
 };
 ```
 </details>
+</details>
 
 ### app > api > prompt > route.js   
 MongoDB에서 모든 Prompt 객체를 검색하고, 사용자 정보를 함께 가져와 JSON 형식으로 응답하는 GET 엔드포인트를 정의하고 있습니다.
+<details>
+
+<summary>Code Explanation</summary>
+
 <details>
 
 <summary>1. 모듈 가져오기</summary>
@@ -293,8 +312,7 @@ import Prompt from '@models/prompt';
 
 <summary>2. GET 엔드포인트 핸들러</summary>
 - GET 요청에 대한 핸들러로, connectToDB 함수를 사용하여 MongoDB에 연결합니다.<br>   
-- Prompt.find({}).populate('creator')를 호출하여 모든 Prompt 객체를 검색하고, creator 필드를 참조하여 해당 사용자 객체를 함께 검색합니다. <br>
-이렇게 함으로써 사용자 정보도 함께 반환됩니다.<br>
+- Prompt.find({}).populate('creator')를 호출하여 모든 Prompt 객체를 검색하고, creator 필드를 참조하여 해당 사용자 객체를 함께 검색합니다. 이렇게 함으로써 사용자 정보도 함께 반환됩니다.<br>
 - 검색된 prompts를 JSON 형식으로 응답하며, 상태 코드를 200(OK)로 설정합니다.<br>
 - 에러가 발생하면 상태 코드를 500(Internal Server Error)로 설정하고 실패 메시지를 응답합니다.<br>
 
@@ -312,9 +330,14 @@ export const GET = async (request) => {
 };
 ```
 </details>
+</details>
 
 ### app > api > users > [id] > posts > route.js   
 특정 사용자가 작성한 Prompt 객체들을 검색하고, 해당 사용자 정보를 함께 가져와 JSON 형식으로 응답하는 GET 엔드포인트를 정의하고 있습니다.
+<details>
+
+<summary>Code Explanation</summary>
+
 <details>
 
 <summary>1. 모듈 가져오기</summary>
@@ -330,8 +353,7 @@ import Prompt from '@models/prompt';
 
 <summary>2. GET 엔드포인트 핸들러</summary>
 - GET 요청에 대한 핸들러로, connectToDB 함수를 사용하여 MongoDB에 연결합니다.<br>   
-- Prompt.find({ creator: params.id })를 호출하여 특정 사용자(creator)가 작성한 Prompt 객체들을 검색하고, populate('creator')를 사용하여 해당 사용자   객체를 함께 가져옵니다. <br>
-이렇게 함으로써 사용자 정보도 함께 반환됩니다.<br>
+- Prompt.find({ creator: params.id })를 호출하여 특정 사용자(creator)가 작성한 Prompt 객체들을 검색하고, populate('creator')를 사용하여 해당 사용자   객체를 함께 가져옵니다. 이렇게 함으로써 사용자 정보도 함께 반환됩니다.<br>
 - 검색된 prompts를 JSON 형식으로 응답하며, 상태 코드를 200(OK)로 설정합니다.<br>
 - 에러가 발생하면 상태 코드를 500(Internal Server Error)로 설정하고 실패 메시지를 응답합니다.<br>
 
@@ -350,9 +372,228 @@ export const GET = async (request, { params }) => {
 };
 ```
 </details>
+</details>
 
+### app > create-prompt > page.jsx 
+Next.js에서 사용되는 React 컴포넌트로, 사용자가 입력한 정보를 사용하여 API에 새로운 프롬프트를 생성하는 역할을 합니다.
+<details>
 
+<summary>Code Explanation</summary>
 
+<details>
+
+<summary>1. Import 문</summary>
+- 'use client';: Next.js에서 클라이언트 사이드 코드임을 나타내는 지시문입니다.<br> 
+-  useState, useSession, useRouter 훅을 React에서 가져옵니다.<br> 
+-  Form 컴포넌트를 가져와서 사용합니다.<br>
+
+```js
+'use client';
+
+import { useState } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+
+import Form from '@components/Form';
+```
+</details>
+
+<details>
+
+<summary>2. CreatePrompt 함수형 컴포넌트</summary>
+- useRouter를 이용하여 현재 라우터 정보를 가져오고, useSession을 사용하여 현재 세션 정보를 가져옵니다<br> 
+- submitting과 setIsSubmitting 상태를 통해 폼 제출 중인지 여부를 추적합니다.<br> 
+- post와 setPost 상태를 사용하여 사용자의 입력을 추적합니다.<br>
+
+```js
+const CreatePrompt = () => {
+  const router = useRouter();
+  const { data: session } = useSession();
+
+  const [submitting, setIsSubmitting] = useState(false);
+  const [post, setPost] = useState({ prompt: '', tag: '' });
+```
+</details>
+
+<details>
+
+<summary>3. createPrompt 함수</summary>
+- createPrompt 함수는 폼 제출 시 호출되며, 폼 제출을 방지하고 제출 상태를 설정합니다.<br> 
+- fetch 함수를 사용하여 API 엔드포인트(/api/prompt/new)로 POST 요청을 보냅니다.<br> 
+- 요청 본문에는 prompt, userId, tag 정보를 JSON 형식으로 전송합니다.<br>
+- 성공적인 응답이 오면 루터를 사용하여 홈페이지(/)로 이동합니다.<br>
+- 에러가 발생하면 콘솔에 에러를 출력합니다.<br>
+- finally 블록에서 setIsSubmitting(false)를 호출하여 제출 상태를 초기화합니다.<br>
+
+```js
+const createPrompt = async (e) => {
+  e.preventDefault();
+  setIsSubmitting(true);
+
+  try {
+    const response = await fetch('/api/prompt/new', {
+      method: 'POST',
+      body: JSON.stringify({
+        prompt: post.prompt,
+        userId: session?.user.id,
+        tag: post.tag,
+      }),
+    });
+
+    if (response.ok) {
+      router.push('/');
+    }
+  } catch (error) {
+    console.log(error);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+```
+</details>
+
+<details>
+
+<summary>4. return 문</summary>
+- Form 컴포넌트에 속성을 전달하여 폼을 렌더링합니다. type은 "Create"로, 사용자 입력과 제출 상태 및 제출 핸들러도 전달됩니다.<br> 
+
+```js
+return <Form type="Create" post={post} setPost={setPost} submitting={submitting} handleSubmit={createPrompt} />;
+```
+</details>
+
+<details>
+
+<summary>5. export 문</summary>
+- CreatePrompt 컴포넌트를 기본 내보내기로 설정합니다.<br> 
+
+```js
+export default CreatePrompt;
+```
+</details>
+</details>
+
+### app > profile > page.jsx 
+현재 로그인한 사용자의 프로필 페이지를 나타내며, 사용자가 작성한 프롬프트를 불러와 보여주고, 수정 및 삭제 기능을 제공합니다.
+<details>
+
+<summary>Code Explanation</summary>
+
+<details>
+
+<summary>1. Import 문</summary>
+- 'use client';: Next.js에서 클라이언트 사이드 코드임을 나타내는 지시문입니다.<br> 
+- useSession, useEffect, useState 훅을 React에서 가져옵니다.<br> 
+- Profile 컴포넌트를 가져와서 사용합니다.<br>
+
+```js
+'use client';
+
+import { useSession } from 'next-auth/react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+
+import Profile from '@components/Profile';
+```
+</details>
+
+<details>
+
+<summary>2. MyProfile 함수형 컴포넌트</summary>
+- useRouter를 이용하여 현재 라우터 정보를 가져오고, useSession을 사용하여 현재 세션 정보를 가져옵니다.<br> 
+- myPosts와 setMyPosts 상태를 사용하여 현재 사용자가 작성한 프롬프트를 추적합니다.<br> 
+
+```js
+const MyProfile = () => {
+  const router = useRouter();
+  const { data: session } = useSession();
+
+  const [myPosts, setMyPosts] = useState([]);
+```
+</details>
+
+<details>
+
+<summary>3. useEffect를 이용한 데이터 로딩</summary>
+- 컴포넌트가 마운트될 때와 session?.user.id가 변경될 때마다 실행되는 useEffect를 사용하여 사용자가 작성한 프롬프트를 불러옵니다.<br> 
+- API 엔드포인트(/api/users/${session?.user.id}/posts)로 GET 요청을 보내고, 응답 데이터를 setMyPosts를 통해 업데이트합니다.<br> 
+
+```js
+useEffect(() => {
+  const fetchPosts = async () => {
+    const response = await fetch(`/api/users/${session?.user.id}/posts`);
+    const data = await response.json();
+
+    setMyPosts(data);
+  };
+
+  if (session?.user.id) fetchPosts();
+}, [session?.user.id]);
+```
+</details>
+
+<details>
+
+<summary>4. 수정 및 삭제 핸들러 함수</summary>
+- handleEdit 함수는 특정 프롬프트의 수정 버튼이 클릭될 때 호출되며, 해당 프롬프트의 ID를 사용하여 수정 페이지로 이동합니다.<br> 
+- handleDelete 함수는 특정 프롬프트의 삭제 버튼이 클릭될 때 호출되며, 사용자에게 삭제 확인 메시지를 표시한 후 확인되면 API를 통해 해당 프롬프트를 삭제하고, 프롬프트 목록에서 해당 항목을 제거합니다.<br> 
+
+```js
+const handleEdit = (post) => {
+  router.push(`/update-prompt?id=${post._id}`);
+};
+
+const handleDelete = async (post) => {
+  const hasConfirmed = confirm('Are you sure you want to delete this prompt?');
+
+  if (hasConfirmed) {
+    try {
+      await fetch(`/api/prompt/${post._id.toString()}`, {
+        method: 'DELETE',
+      });
+
+      const filteredPosts = myPosts.filter((item) => item._id !== post._id);
+
+      setMyPosts(filteredPosts);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+};
+```
+</details>
+
+<details>
+
+<summary>5. Profile 컴포넌트 렌더링</summary>
+- Profile 컴포넌트를 렌더링하고, 해당 컴포넌트에 사용자의 이름, 소개, 사용자가 작성한 프롬프트 데이터, 그리고 수정 및 삭제 핸들러 함수들을 전달합니다.<br> 
+
+```js
+return (
+  <Profile
+    name="My"
+    desc="Welcome to your personalized profile page. Share your exceptional prompts and inspire others with the power of your imagination"
+    data={myPosts}
+    handleEdit={handleEdit}
+    handleDelete={handleDelete}
+  />
+);
+```
+</details>
+
+<details>
+
+<summary>6. export 문</summary>
+- MyProfile 컴포넌트를 기본 내보내기로 설정합니다.<br> 
+
+```js
+export default MyProfile;
+);
+```
+</details>
+</details>
+
+### 
 ### 구글 클라우드
 New project name : promptopia 생성.  
 Api 및 서비스 - OAuth 동의 화면
