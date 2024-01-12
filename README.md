@@ -601,23 +601,123 @@ export default MyProfile;
 
 <details>
 
-<summary>1. Import 문</summary>
-- 'use client';: Next.js에서 클라이언트 사이드 코드임을 나타내는 지시문입니다.<br> 
-- useSession, useEffect, useState 훅을 React에서 가져옵니다.<br> 
-- Profile 컴포넌트를 가져와서 사용합니다.<br>
+<summary>1. 라이브러리 및 훅 가져오기</summary>
+- useEffect와 useState는 React 훅으로, 컴포넌트에서 부작용 및 상태를 다루는 데 사용됩니다.<br> 
+- useRouter와 useSearchParams는 Next.js의 훅으로, 브라우저의 URL 및 쿼리 매개변수와 상호 작용하기 위해 사용됩니다.<br> 
+- Form은 다른 컴포넌트로부터 가져온 것으로 보이며, 폼을 렌더링하고 관리하는 데 사용됩니다.<br>
 
 ```js
-'use client';
-
-import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import Form from '@components/Form';
+```
+</details>
 
-import Profile from '@components/Profile';
+<details>
+
+<summary>2. UpdatePrompt 컴포넌트 정의</summary>
+- UpdatePrompt는 함수형 컴포넌트를 정의합니다.<br> 
+
+```js
+const UpdatePrompt = () => {
+```
+</details>
+
+<details>
+
+<summary>3. Router 및 URL 매개변수 설정</summary>
+- useRouter를 사용하여 Next.js의 라우터 객체를 가져오고, useSearchParams를 사용하여 현재 URL의 쿼리 매개변수를 가져옵니다.<br> 
+- promptId는 URL에서 'id' 매개변수의 값을 가져옵니다.<br>
+
+```js
+const router = useRouter();
+const searchParams = useSearchParams();
+const promptId = searchParams.get('id');{
+```
+</details>
+
+<details>
+
+<summary>4. 상태 및 부작용 관리</summary>
+- post는 폼의 입력 상태를 관리합니다.<br> 
+- submitting은 폼이 제출 중인지 여부를 나타냅니다.<br>
+
+```js
+const [post, setPost] = useState({ prompt: '', tag: '' });
+const [submitting, setIsSubmitting] = useState(false);
+```
+</details>
+
+<details>
+
+<summary>5. 프롬프트 세부 정보 가져오기</summary>
+- useEffect를 사용하여 컴포넌트가 마운트되거나 promptId가 변경될 때 실행되는 함수를 정의합니다.<br> 
+- getPromptDetails 함수는 서버에서 특정 프롬프트의 세부 정보를 가져와 post 상태를 업데이트합니다.<br>
+
+```js
+useEffect(() => {
+    const getPromptDetails = async () => {
+      const response = await fetch(`/api/prompt/${promptId}`);
+      const data = await response.json();
+
+      setPost({
+        prompt: data.prompt,
+        tag: data.tag,
+      });
+    };
+
+    if (promptId) getPromptDetails();
+  }, [promptId]);
+```
+</details>
+
+<details>
+
+<summary>6. 프롬프트 업데이트 처리</summary>
+- updatePrompt 함수는 폼 제출 시 서버에 업데이트된 프롬프트 정보를 전송합니다.<br> 
+- 성공적으로 업데이트되면 홈페이지로 이동합니다.<br>
+
+```js
+  const updatePrompt = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    if (!promptId) return alert('Missing PromptId!');
+
+    try {
+      const response = await fetch(`/api/prompt/${promptId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+          prompt: post.prompt,
+          tag: post.tag,
+        }),
+      });
+
+      if (response.ok) {
+        router.push('/');
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+```
+</details>
+
+<details>
+
+<summary>7. 폼 렌더링 및 전달</summary>
+- Form 컴포넌트에 상태 및 처리 함수를 전달하여 폼을 렌더링합니다.<br> 
+- 성공적으로 업데이트되면 홈페이지로 이동합니다.<br>
+
+```js
+  return <Form type="Edit" post={post} setPost={setPost} submitting={submitting} handleSubmit={updatePrompt} />;
 ```
 </details>
 </details>
 
+### app > layout.jsx
 ### 구글 클라우드
 New project name : promptopia 생성.  
 Api 및 서비스 - OAuth 동의 화면
