@@ -593,7 +593,31 @@ export default MyProfile;
 </details>
 </details>
 
-### 
+### app > update-prompt > page.jsx
+
+<details>
+
+<summary>Code Explanation</summary>
+
+<details>
+
+<summary>1. Import 문</summary>
+- 'use client';: Next.js에서 클라이언트 사이드 코드임을 나타내는 지시문입니다.<br> 
+- useSession, useEffect, useState 훅을 React에서 가져옵니다.<br> 
+- Profile 컴포넌트를 가져와서 사용합니다.<br>
+
+```js
+'use client';
+
+import { useSession } from 'next-auth/react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+
+import Profile from '@components/Profile';
+```
+</details>
+</details>
+
 ### 구글 클라우드
 New project name : promptopia 생성.  
 Api 및 서비스 - OAuth 동의 화면
