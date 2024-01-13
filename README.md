@@ -1,5 +1,6 @@
 # Promptopia
-Promptopia는 Next.js 14 AI 프롬프트 공유 애플리케이션 입니다.  
+Promptopia는 Next.js 14 AI 프롬프트 공유 애플리케이션 입니다.<br/>
+[참고영상]("https://www.youtube.com/watch?v=wm5gMKuwSYk&t=5916s") 
 ### 설치
 `npx create-next-app@latest`
 <details>
@@ -1434,16 +1435,488 @@ const Profile = ({ name, desc, data, handleEdit, handleDelete }) => {
 export default Profile;
 ```
 </details>
+</details>
+
+### PromptCard.jsx
+AI 프롬프트 카드를 나타내는 React 컴포넌트인 PromptCard입니다.<br/>
+사용자의 프로필 이미지, 유저네임, 이메일, 프롬프트 내용, 태그 등을 표시하며, 프롬프트 카드에 대한 다양한 동작(프로필 클릭, 복사, 태그 클릭, 편집, 삭제)을 처리합니다. <br/>
+<details>
+
+<summary>Code Explanation</summary>
+<details>
+<summary>1. PromptCard 컴포넌트</summary>
+- PromptCard 컴포넌트는 AI 프롬프트를 나타냅니다.<br/>
+- post, handleEdit, handleDelete, handleTagClick는 부모 컴포넌트에서 전달되는 프롭스입니다.<br/>
+
+```js
+const PromptCard = ({ post, handleEdit, handleDelete, handleTagClick }) => {
+
+```
+</details>
+
+<details>
+<summary>2. 프로필 클릭 핸들러</summary>
+- 사용자의 프로필 이미지, 이름, 이메일을 클릭하면 해당 사용자의 프로필 페이지로 이동합니다.<br/>
+- 만약 현재 로그인한 사용자의 ID와 프롬프트를 작성한 사용자의 ID가 동일하면, 현재 사용자의 프로필 페이지로 이동합니다.<br/>
+
+```js
+const Profile = ({ name, desc, data, handleEdit, handleDelete }) => {
+```
+</details>
+
+<details>
+<summary>3. 프롬프트 복사 핸들러</summary>
+- 프롬프트를 클립보드에 복사하는 동작을 수행합니다.<br/>
+- setCopied를 사용하여 복사된 상태를 관리하고, 3초 뒤에 상태를 초기화합니다.<br/>
+
+```js
+const handleCopy = () => {
+  setCopied(post.prompt);
+  navigator.clipboard.writeText(post.prompt);
+  setTimeout(() => setCopied(false), 3000);
+};
+
+```
+</details>
+
+<details>
+<summary>4. 프롬프트 카드 렌더링</summary>
+- 각 프롬프트 카드를 감싸는 컨테이너입니다.<br/>
+
+```js
+<div className="prompt_card">
+  <div className="flex justify-between items-start gap-5">
+    <div className="flex-1 flex justify-start items-center gap-3 cursor-pointer" onClick={handleProfileClick}>
+      <Image
+        src={post.creator.image}
+        alt="user_image"
+        width={40}
+        height={40}
+        className="rounded-full object-contain"
+      />
+
+      <div className="flex flex-col">
+        <h3 className="font-satoshi font-semibold text-gray-900">{post.creator.username}</h3>
+        <p className="font-inter text-sm text-gray-500">{post.creator.email}</p>
+      </div>
+    </div>
+
+    <div className="copy_btn" onClick={handleCopy}>
+      <Image
+        src={copied === post.prompt ? '/assets/icons/tick.svg' : '/assets/icons/copy.svg'}
+        alt={copied === post.prompt ? 'tick_icon' : 'copy_icon'}
+        width={12}
+        height={12}
+      />
+    </div>
+  </div>
+
+  <p className="my-4 font-satoshi text-sm text-gray-700">{post.prompt}</p>
+  <p
+    className="font-inter text-sm blue_gradient cursor-pointer"
+    onClick={() => handleTagClick && handleTagClick(post.tag)}
+  >
+    #{post.tag}
+  </p>
+
+  {session?.user.id === post.creator._id && pathName === '/profile' && (
+    <div className="mt-5 flex-center gap-4 border-t border-gray-100 pt-3">
+      <p className="font-inter text-sm green_gradient cursor-pointer" onClick={handleEdit}>
+        Edit
+      </p>
+      <p className="font-inter text-sm orange_gradient cursor-pointer" onClick={handleDelete}>
+        Delete
+      </p>
+    </div>
+  )}
+</div>
+```
+</details>
+
+<details>
+<summary>5. 프로필 정보 및 복사 버튼 렌더링</summary>
+- 사용자 프로필 정보와 복사 버튼을 감싸는 컨테이너입니다.<br/>
+
+```js
+<div className="flex justify-between items-start gap-5">
+  <div className="flex-1 flex justify-start items-center gap-3 cursor-pointer" onClick={handleProfileClick}>
+    <Image
+      src={post.creator.image}
+      alt="user_image"
+      width={40}
+      height={40}
+      className="rounded-full object-contain"
+    />
+
+    <div className="flex flex-col">
+      <h3 className="font-satoshi font-semibold text-gray-900">{post.creator.username}</h3>
+      <p className="font-inter text-sm text-gray-500">{post.creator.email}</p>
+    </div>
+  </div>
+
+  <div className="copy_btn" onClick={handleCopy}>
+    <Image
+      src={copied === post.prompt ? '/assets/icons/tick.svg' : '/assets/icons/copy.svg'}
+      alt={copied === post.prompt ? 'tick_icon' : 'copy_icon'}
+      width={12}
+      height={12}
+    />
+  </div>
+</div>
+```
+</details>
+
+<details>
+<summary>6. 프로필 정보 렌더링</summary>
+- 사용자의 프로필 이미지, 이름, 이메일을 표시하며, 클릭 시 프로필 페이지로 이동합니다.<br/>
+
+```js
+<div className="flex-1 flex justify-start items-center gap-3 cursor-pointer" onClick={handleProfileClick}>
+  <Image
+    src={post.creator.image}
+    alt="user_image"
+    width={40}
+    height={40}
+    className="rounded-full object-contain"
+  />
+
+  <div className="flex flex-col">
+    <h3 className="font-satoshi font-semibold text-gray-900">{post.creator.username}</h3>
+    <p className="font-inter text-sm text-gray-500">{post.creator.email}</p>
+  </div>
+</div>
+
+```
+</details>
+
+<details>
+<summary>7. 프롬프트 복사 버튼 렌더링</summary>
+- 프롬프트를 복사하는 버튼입니다.<br/>
+
+```js
+<div className="copy_btn" onClick={handleCopy}>
+  <Image
+    src={copied === post.prompt ? '/assets/icons/tick.svg' : '/assets/icons/copy.svg'}
+    alt={copied === post.prompt ? 'tick_icon' : 'copy_icon'}
+    width={12}
+    height={12}
+  />
+</div>
+```
+</details>
+
+<details>
+<summary>8. 프롬프트 내용 및 태그 렌더링</summary>
+- 프롬프트 내용과 태그를 표시하는 부분입니다.<br/>
+- 태그를 클릭할 경우, handleTagClick 함수가 존재하면 해당 함수를 호출합니다.<br/>
+
+```js
+<p className="my-4 font-satoshi text-sm text-gray-700">{post.prompt}</p>
+<p
+  className="font-inter text-sm blue_gradient cursor-pointer"
+  onClick={() => handleTagClick && handleTagClick(post.tag)}
+>
+  #{post.tag}
+</p>
+```
+</details>
+
+<details>
+<summary>9. 프로필 주인만 볼 수 있는 편집 및 삭제 버튼 렌더링:</summary>
+- 현재 로그인한 사용자와 프롬프트 작성자가 동일하며, 현재 경로가 프로필 페이지인 경우에만 편집 및 삭제 버튼을 표시합니다.<br/>
+
+```js
+{session?.user.id === post.creator._id && pathName === '/profile' && (
+  <div className="mt-5 flex-center gap-4 border-t border-gray-100 pt-3">
+    <p className="font-inter text-sm green_gradient cursor-pointer" onClick={handleEdit}>
+      Edit
+    </p>
+    <p className="font-inter text-sm orange_gradient cursor-pointer" onClick={handleDelete}>
+      Delete
+    </p>
+  </div>
+)}
+```
+</details>
+
+<details>
+<summary>10. 편집 및 삭제 버튼 렌더링</summary>
+- 편집 및 삭제 버튼을 표시하고, 클릭 시 각각의 핸들러 함수를 호출합니다<br/>
+
+```js
+<div className="mt-5 flex-center gap-4 border-t border-gray-100 pt-3">
+  <p className="font-inter text-sm green_gradient cursor-pointer" onClick={handleEdit}>
+    Edit
+  </p>
+  <p className="font-inter text-sm orange_gradient cursor-pointer" onClick={handleDelete}>
+    Delete
+  </p>
+</div>
+```
+</details>
+</details>
+
+### Provider.jsx
+이 코드는 NextAuth의 SessionProvider를 사용하여 세션 관리를 위한 커스텀 Provider인 Provider를 정의하고 있습니다.<br/>
+이러한 Provider 구성을 사용하면 해당 애플리케이션에서 세션을 효과적으로 관리할 수 있습니다. <br/>
+Provider로 감싸진 컴포넌트들은 세션 정보에 쉽게 접근할 수 있게 되며, 이를 통해 로그인 상태 등을 관리할 수 있습니다.<br/>
+
+<details>
+
+<summary>Code Explanation</summary>
+<details>
+<summary>1. Provider 컴포넌트</summary>
+- Provider 컴포넌트는 SessionProvider를 사용하여 세션을 관리하는 역할을 합니다.<br/>
+- children은 Provider로 감싸인 자식 컴포넌트들을 나타냅니다.<br/>
+- session은 NextAuth의 세션 정보입니다.<br/>
+
+```js
+const Provider = ({ children, session }) => <SessionProvider session={session}>{children}</SessionProvider>;
+
+```
+</details>
+
+<details>
+<summary>2. SessionProvider 사용</summary>
+- SessionProvider는 NextAuth에서 제공하는 React 컴포넌트로, 세션을 관리하는 데 사용됩니다.<br/>
+- 세션 정보는 session 프롭스를 통해 전달됩니다.<br/>
+
+```js
+<SessionProvider session={session}>{children}</SessionProvider>;
+
+```
+</details>
+
+<details>
+<summary>3. Export</summary>
+- Provider 컴포넌트를 외부에서 사용할 수 있도록 내보냅니다.<br/>
+
+```js
+export default Provider;
+
+```
+</details>
+</details>
+
+## Model(스키마 생성)
+
+### prompt.js
+Mongoose를 사용하여 MongoDB에 저장되는 AI 프롬프트 모델을 정의하는 부분입니다.<br/>
+AI 프롬프트에는 작성자(creator), 내용(prompt), 그리고 태그(tag)와 같은 필드들이 포함되어 있습니다.<br/>
+
+<details>
+
+<summary>Code Explanation</summary>
+<details>
+<summary>1. Mongoose import</summary>
+- MongoDB와 상호 작용하기 위해 몽구스에서 제공하는 Schema와 model을 임포트합니다.<br/>
+
+```js
+import { Schema, model, models } from 'mongoose';
+```
+</details>
+
+<details>
+<summary>2. 프롬프트 스키마 정의</summary>
+- PromptSchema는 AI 프롬프트의 몽구스 스키마입니다.<br/>
+- creator 필드는 유저의 ObjectId를 참조하며, 'User' 모델과 연결됩니다.<br/>
+- prompt 필드는 AI 프롬프트 내용을 나타내는 문자열입니다. required 속성을 통해 필수 항목임을 정의합니다.<br/>
+- tag 필드는 프롬프트의 태그를 나타내는 문자열입니다. 역시 required 속성을 사용하여 필수 항목임을 정의합니다.<br/>
+
+```js
+const PromptSchema = new Schema({
+  creator: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+  },
+  prompt: {
+    type: String,
+    required: [true, 'Prompt is required.'],
+  },
+  tag: {
+    type: String,
+    required: [true, 'Tag is required.'],
+  },
+});
+```
+</details>
+
+<details>
+<summary>3. 모델 생성 또는 가져오기</summary>
+- models.Prompt가 이미 존재하면 해당 모델을 사용하고, 그렇지 않으면 새로운 모델을 생성합니다.<br/>
+- model 함수를 사용하여 'Prompt'라는 모델을 정의하고, 해당 모델을 Prompt 상수에 할당합니다.<br/>
+
+```js
+const Prompt = models.Prompt || model('Prompt', PromptSchema);
+```
+</details>
+
+<details>
+<summary>4. 모델 내보내기</summary>
+- 정의한 Prompt 모델을 외부에서 사용할 수 있도록 내보냅니다.<br/>
+
+```js
+export default Prompt;
+```
+</details>
+</details>
+
+### user.js
+이 코드는 MongoDB에서 사용자 정보를 저장하고 조회하기 위한 몽구스 모델을 정의한 것입니다. <br/>
+사용자 모델에는 이메일, 유저네임, 프로필 이미지 URL과 같은 필드들이 정의되어 있습니다. <br/>
+<details>
+
+<summary>Code Explanation</summary>
+<details>
+<summary>1. Mongoose import</summary>
+- MongoDB와 상호 작용하기 위해 몽구스에서 제공하는 Schema와 model을 임포트합니다.<br/>
+
+```js
+import { Schema, model, models } from 'mongoose';
+```
+</details>
+
+<details>
+<summary>2. 사용자 스키마 정의</summary>
+- UserSchema는 사용자의 몽구스 스키마입니다.<br/>
+- email 필드는 문자열로, 중복을 허용하지 않도록 unique 속성이 설정되어 있습니다. 또한 필수 항목임을 required 속성으로 정의합니다.<br/>
+- username 필드는 문자열로, 유효성 검사를 위한 match 속성이 설정되어 있습니다. 유저네임은 특정 패턴을 따라야 하며 중복을 허용하지 않습니다.<br/>
+- image 필드는 사용자 프로필 이미지의 URL을 나타내는 문자열입니다.<br/>
+
+```js
+const UserSchema = new Schema({
+  email: {
+    type: String,
+    unique: [true, 'Email already exists!'],
+    required: [true, 'Email is required!'],
+  },
+  username: {
+    type: String,
+    required: [true, 'Username is required!'],
+    match: [
+      /^(?=.{2,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._가-힣]+(?<![_.])$/,
+      'Username invalid, it should contain 2-20 alphanumeric or Korean letters and be unique!',
+    ],
+  },
+  image: {
+    type: String,
+  },
+});
+```
+</details>
+
+<details>
+<summary>3. 모델 생성 또는 가져오기</summary>
+- models.User가 이미 존재하면 해당 모델을 사용하고, 그렇지 않으면 새로운 모델을 생성합니다.<br/>
+- model 함수를 사용하여 'User'라는 모델을 정의하고, 해당 모델을 User 상수에 할당합니다.<br/>
 
 
+```js
+const User = models.User || model('User', UserSchema);
+```
+</details>
 
+<details>
+<summary>4. 모델 내보내기</summary>
+- 정의한 User 모델을 외부에서 사용할 수 있도록 내보냅니다.<br/>
+
+```js
+export default User;
+```
+</details>
+</details>
+
+## Utils
+
+### database.js
+이 코드는 MongoDB 데이터베이스에 연결하기 위한 MongoDB와 Mongoose를 사용하는 코드입니다. <br/>
+주요 목적은 connectToDB 함수를 통해 MongoDB에 연결하고, 연결이 이미 수립되어 있으면 추가적인 연결 시도를 피하기 위해 isConnected 변수를 사용합니다.<br/>
+
+<details>
+
+<summary>Code Explanation</summary>
+
+<details>
+<summary>1. Mongoose import</summary>
+- MongoDB와 상호 작용을 위해 Mongoose를 임포트합니다.<br/>
+
+```js
+import mongoose from 'mongoose';
+```
+</details>
+
+<details>
+<summary>2. isConnected 변수</summary>
+- MongoDB 연결 상태를 추적하는 변수입니다. 이미 연결되어 있는지 여부를 확인하여 중복 연결을 방지합니다.<br/>
+
+```js
+let isConnected = false;
+```
+</details>
+
+<details>
+<summary>3. connectToDB 함수</summary>
+- connectToDB 함수는 MongoDB에 연결하는 비동기 함수입니다.<br/>
+- mongoose.set('strictQuery', true);를 통해 엄격한 쿼리 모드를 설정합니다.<br/>
+- isConnected 변수를 확인하여 이미 연결되어 있으면 함수를 종료하고 로그를 출력합니다.<br/>
+- mongoose.connect를 사용하여 MongoDB에 연결을 시도하고, 연결 옵션들을 설정합니다.<br/>
+- 연결이 성공하면 isConnected를 true로 설정하고 연결 성공 로그를 출력합니다.<br/>
+- 연결 실패 시 에러를 콘솔에 출력합니다.<br/>
+
+```js
+export const connectToDB = async () => {
+  mongoose.set('strictQuery', true);
+
+  if (isConnected) {
+    console.log('MongoDB is already connected');
+    return;
+  }
+
+  try {
+    await mongoose.connect(process.env.MONGODB_URI, {
+      dbName: 'share_prompt',
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+
+    isConnected = true;
+
+    console.log('MongoDB connected');
+  } catch (error) {
+    console.log(error);
+  }
+};
+```
+</details>
+<details>
+
+<summary>4. 환경 변수 사용</summary>
+- process.env.MONGODB_URI를 통해 MongoDB 연결 URI를 사용합니다.<br/>
+- dbName: 'share_prompt'은 연결할 데이터베이스의 이름을 나타냅니다.<br/>
+
+</details>
+</details>
+
+## 구글 로그인 연동
 
 ### 구글 클라우드
 New project name : promptopia 생성.  
 Api 및 서비스 - OAuth 동의 화면
 App name: Promptopia 작성, 이메일 작성
 
+`http://localhost:3000/api/auth/callback/google`와 같은 주소는 OAuth 2.0 기반의 로그인 과정에서 Google OAuth 프로바이더로부터 사용자의 동의를 얻고, 로그인이 성공했을 때 사용자를 다시 리디렉션하는 역할을 합니다.<br/>
+
+`/api/auth/callback/google`: Next.js 애플리케이션에서 /api 경로는 서버사이드 코드를 처리하는 API 경로를 나타내며, /auth/callback/google는 Google OAuth에서 로그인 성공 또는 실패 후에 호출되는 콜백 엔드포인트를 나타냅니다.<br/>
+
 NEXTAUTH_SECRET -> `openssl rand -base64 32` -> https://www.cryptool.org/en/cto/openssl  -> 
+
+OAuth 로그인 흐름은 대략적으로 다음과 같습니다.<br/>
+
+1.사용자가 애플리케이션에서 "Google로 로그인"을 클릭합니다.<br/>
+2.애플리케이션은 Google OAuth 서비스에 사용자 인증을 요청합니다.<br/>
+3.사용자가 Google에서 로그인을 수행하고, 동의하면서 권한을 부여합니다.<br/>
+4.Google은 사용자를 다시 애플리케이션으로 리디렉션하며, 리디렉션 URL은 /api/auth/callback/google과 같은 형식을 가집니다.<br/>
+5.애플리케이션은 이 리디렉션 요청을 처리하고, 사용자에게 로그인이 완료되었음을 알리며 필요한 후속 동작을 수행합니다.<br/>
 
 ## 트러블 슈팅
 Module not found: Can't resolve '@styles/globals.css'
