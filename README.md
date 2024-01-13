@@ -1,6 +1,7 @@
 # Promptopia
 Promptopia는 Next.js 14 AI 프롬프트 공유 애플리케이션 입니다.<br/>
-[참고영상]("https://www.youtube.com/watch?v=wm5gMKuwSYk&t=5916s") 
+
+[참고영상](https://www.youtube.com/watch?v=wm5gMKuwSYk&t=5916s) 
 ### 설치
 `npx create-next-app@latest`
 <details>
@@ -1896,6 +1897,28 @@ export const connectToDB = async () => {
 
 </details>
 </details>
+
+## tailwindcss
+Tailwind CSS는 HTML, CSS, JavaScript를 사용하여 웹 프로젝트를 빠르게 개발할 수 있도록 도와주는 CSS 프레임워크입니다. <br/>
+Tailwind CSS는 다른 CSS 프레임워크와는 다르게 높은 유연성을 제공하며, 기본적인 스타일을 빠르게 적용할 수 있는 클래스 기반의 방식을 채택합니다.<br/>
+
+#### 클래스 기반 스타일링
+Tailwind CSS는 클래스 기반의 스타일링을 채택합니다. 여러 가지 유용한 CSS 속성을 나타내는 클래스들을 직접 HTML 요소에 적용하여 스타일을 정의합니다.<br/>
+
+#### 설정 가능한 유틸리티 클래스
+Tailwind는 커스터마이징이 가능한 다양한 유틸리티 클래스를 제공합니다. 각 클래스는 특정 CSS 속성과 값에 대응되며, 특별한 의미를 가지고 있습니다.<br/>
+
+#### 미리 정의된 스타일
+Tailwind는 기본적인 스타일이 미리 정의되어 있어, 일반적인 디자인 패턴과 컴포넌트를 쉽게 구축할 수 있습니다.<br/>
+
+#### 커스터마이즈 가능한 구성
+Tailwind는 프로젝트의 필요에 따라 커스터마이즈할 수 있는 구성 파일을 제공합니다. 이를 통해 프로젝트에 필요한 클래스를 추가하거나 제외시킬 수 있습니다.<br/>
+
+#### 반응형 디자인
+Tailwind는 반응형 디자인을 지원하며, 미디어 쿼리에 따라 다양한 화면 크기에 맞게 스타일을 지정할 수 있습니다.<br/>
+
+#### PurgeCSS 통합
+Tailwind는 프로덕션 환경에서 사용하지 않는 스타일을 자동으로 제거하는 기능을 제공합니다. 이를 통해 최종 번들의 크기를 최적화할 수 있습니다.<br/>
 
 ## 구글 로그인 연동
 
